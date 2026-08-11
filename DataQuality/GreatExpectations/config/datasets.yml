@@ -1,0 +1,5 @@
+datasets:
+  - name: ventes
+    path: resources/ventes_*.parquet
+    expectation_suite: ventes
+    checkpoint_name: ventes_checkpoint

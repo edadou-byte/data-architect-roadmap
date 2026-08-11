@@ -1,0 +1,18 @@
+{
+  "actions": [
+    {
+      "name": "update_data_docs",
+      "site_names": [],
+      "type": "update_data_docs"
+    }
+  ],
+  "id": "014cbcef-a230-44cd-b7b0-a269e36abaf5",
+  "name": "ventes_checkpoint_ventes_2025_04",
+  "result_format": "SUMMARY",
+  "validation_definitions": [
+    {
+      "id": "80dfa269-f176-472e-b99d-b52cef551985",
+      "name": "ventes_2025_04_validation_def"
+    }
+  ]
+}

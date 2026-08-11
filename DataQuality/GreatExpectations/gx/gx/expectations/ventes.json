@@ -1,0 +1,39 @@
+{
+  "expectations": [
+    {
+      "id": "c576e62d-2e7d-4578-b465-77f4253b3557",
+      "kwargs": {
+        "column": "quantite",
+        "min_value": 1.0
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_between"
+    },
+    {
+      "id": "83acf63a-93a2-4cd8-86a8-d6f6867d6a20",
+      "kwargs": {
+        "column": "client_email"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    },
+    {
+      "id": "1f996dbb-23fb-4b79-8478-105fa5e671b5",
+      "kwargs": {
+        "column": "client_email",
+        "regex": "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_match_regex"
+    }
+  ],
+  "id": "e43cca63-fea7-4a12-8029-95522daf31a8",
+  "meta": {
+    "great_expectations_version": "1.20.0"
+  },
+  "name": "ventes",
+  "notes": null
+}

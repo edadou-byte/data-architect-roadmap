@@ -1,0 +1,22 @@
+{
+  "data": {
+    "asset": {
+      "id": "a5ba865d-c77e-44b3-a577-4844b85cab24",
+      "name": "ventes_2025_04_asset"
+    },
+    "batch_definition": {
+      "id": "11f54014-6f04-4a64-b1f2-d7f847570001",
+      "name": "ventes_2025_04_batch_def"
+    },
+    "datasource": {
+      "id": "5f3f5ae2-d607-4e6c-82dd-c57833f0a329",
+      "name": "ventes_2025_04_source"
+    }
+  },
+  "id": "80dfa269-f176-472e-b99d-b52cef551985",
+  "name": "ventes_2025_04_validation_def",
+  "suite": {
+    "id": "e43cca63-fea7-4a12-8029-95522daf31a8",
+    "name": "ventes"
+  }
+}
