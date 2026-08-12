@@ -4,7 +4,7 @@ from src.config import BASE_DIR
 from src.spark_session import get_spark_session
 from src.gx_context import get_context
 from src.pipeline.gx_pipeline import run_file_validation
-from src.pipeline.file_resolver import resolve_dataset_files
+from src.pipeline.resolve_dataset_files import resolve_dataset_files
 import src.expectations  # déclenche les @register_suite
 
 

@@ -3,3 +3,9 @@ datasets:
     path: resources/ventes_*.parquet
     expectation_suite: ventes
     checkpoint_name: ventes_checkpoint
+
+  - name: clients_databricks
+      type: databricks
+      table: main.sales.clients        # catalog.schema.table
+      expectation_suite: clients
+      checkpoint_name: clients_checkpoint

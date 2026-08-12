@@ -4,12 +4,10 @@ import great_expectations as gx
 from great_expectations import RunIdentifier
 
 from src.expectations.registry import get_expectations_for_suite
+from src.databricks_config import build_databricks_connection_string
 
 
 def get_or_create_suite(context, suite_name: str):
-    """Une suite par TYPE de dataset (ventes, clients...), partagée entre
-    tous les fichiers correspondants — c'est la logique métier qui ne change pas
-    d'un fichier à l'autre."""
     try:
         suite = context.suites.get(name=suite_name)
     except Exception:
@@ -19,8 +17,9 @@ def get_or_create_suite(context, suite_name: str):
     return suite
 
 
-def get_or_create_batch_definition(context, file_name: str):
-    """Un Batch Definition par FICHIER concret (ventes_2025_01, ventes_2025_02...)."""
+def get_or_create_batch_definition(context, file_config: dict):
+    file_name = file_config["file_name"]
+    dataset_type = file_config.get("type", "parquet")
     data_source_name = f"{file_name}_source"
     data_asset_name = f"{file_name}_asset"
     batch_definition_name = f"{file_name}_batch_def"
@@ -28,19 +27,36 @@ def get_or_create_batch_definition(context, file_name: str):
     try:
         data_source = context.data_sources.get(data_source_name)
     except Exception:
-        data_source = context.data_sources.add_spark(name=data_source_name)
+        if dataset_type == "databricks":
+            data_source = context.data_sources.add_databricks_sql(
+                name=data_source_name,
+                connection_string=build_databricks_connection_string(),
+            )
+        else:
+            data_source = context.data_sources.add_spark(name=data_source_name)
 
     try:
         data_asset = data_source.get_asset(data_asset_name)
     except Exception:
-        data_asset = data_source.add_dataframe_asset(name=data_asset_name)
+        if dataset_type == "databricks":
+            data_asset = data_source.add_table_asset(
+                name=data_asset_name,
+                table_name=file_config["table"],
+            )
+        else:
+            data_asset = data_source.add_dataframe_asset(name=data_asset_name)
 
     try:
         batch_definition = data_asset.get_batch_definition(batch_definition_name)
     except Exception:
-        batch_definition = data_asset.add_batch_definition_whole_dataframe(
-            batch_definition_name
-        )
+        if dataset_type == "databricks":
+            batch_definition = data_asset.add_batch_definition_whole_table(
+                batch_definition_name
+            )
+        else:
+            batch_definition = data_asset.add_batch_definition_whole_dataframe(
+                batch_definition_name
+            )
 
     return batch_definition
 
@@ -70,28 +86,25 @@ def get_or_create_checkpoint(context, checkpoint_name, validation_definition):
 
 def run_file_validation(context, spark, file_config: dict):
     file_name = file_config["file_name"]
-    path = file_config["path"]
+    dataset_type = file_config.get("type", "parquet")
     suite_name = file_config["expectation_suite"]
     checkpoint_name = file_config["checkpoint_name"]
 
-    df = spark.read.parquet(path)
-
     suite = get_or_create_suite(context, suite_name)
-    batch_definition = get_or_create_batch_definition(context, file_name)
+    batch_definition = get_or_create_batch_definition(context, file_config)
     validation_definition = get_or_create_validation_definition(
         context, file_name, batch_definition, suite
     )
     checkpoint = get_or_create_checkpoint(context, checkpoint_name, validation_definition)
 
-    run_id = RunIdentifier(
-        run_name=file_name,  # ex: "ventes_2025_01"
-        run_time=datetime.now(timezone.utc),
-    )
+    run_id = RunIdentifier(run_name=file_name, run_time=datetime.now(timezone.utc))
 
-    result = checkpoint.run(
-        batch_parameters={"dataframe": df},
-        run_id=run_id,
-    )
+    if dataset_type == "databricks":
+        # Pas besoin de DataFrame : GX interroge directement le SQL Warehouse
+        result = checkpoint.run(run_id=run_id)
+    else:
+        df = spark.read.parquet(file_config["path"])
+        result = checkpoint.run(batch_parameters={"dataframe": df}, run_id=run_id)
 
     print(f"[{file_name}] Succès : {result.success}")
     return result
