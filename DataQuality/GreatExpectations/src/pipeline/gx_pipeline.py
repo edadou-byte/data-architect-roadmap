@@ -109,7 +109,6 @@ def run_file_validation(context, spark, file_config: dict):
         # Pas besoin de DataFrame : GX interroge directement le SQL Warehouse
         result = checkpoint.run(run_id=run_id)
     elif dataset_type == "postgres":
-        print("here")
         result = checkpoint.run(run_id=run_id)
     else:
         df = spark.read.parquet(file_config["path"])
