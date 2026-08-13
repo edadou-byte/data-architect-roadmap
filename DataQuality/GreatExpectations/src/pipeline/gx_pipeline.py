@@ -28,6 +28,7 @@ def get_or_create_batch_definition(context, file_config: dict):
         data_source = context.data_sources.get(data_source_name)
     except Exception:
         if dataset_type == "databricks":
+            print(build_databricks_connection_string())
             data_source = context.data_sources.add_databricks_sql(
                 name=data_source_name,
                 connection_string=build_databricks_connection_string(),

@@ -11,6 +11,8 @@ def build_databricks_connection_string() -> str:
     schema = os.environ.get("DATABRICKS_SCHEMA", "default")
 
     return (
-        f"databricks://token:{token}@{host}:443/{schema}"
-        f"?http_path={http_path}&catalog={catalog}"
+        f"databricks://token:{token}@{host}:443/default"
+        f"?http_path={http_path}"
+        f"&catalog={catalog}"
+        f"&schema={schema}"
     )
