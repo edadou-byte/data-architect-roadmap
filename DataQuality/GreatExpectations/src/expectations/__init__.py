@@ -1,1 +1,1 @@
-from src.expectations import ventes_expectations, clients_expectations, bv_orders_expectations  # noqa: F401
+from src.expectations import ventes_expectations, clients_expectations, bv_orders_expectations, bloomreach_expectations  # noqa: F401

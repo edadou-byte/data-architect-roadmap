@@ -5,6 +5,7 @@ from great_expectations import RunIdentifier
 
 from src.expectations.registry import get_expectations_for_suite
 from src.databricks_config import build_databricks_connection_string
+from src.postgresql_config import build_postgres_connection_string
 
 
 def get_or_create_suite(context, suite_name: str):
@@ -28,10 +29,14 @@ def get_or_create_batch_definition(context, file_config: dict):
         data_source = context.data_sources.get(data_source_name)
     except Exception:
         if dataset_type == "databricks":
-            print(build_databricks_connection_string())
             data_source = context.data_sources.add_databricks_sql(
                 name=data_source_name,
                 connection_string=build_databricks_connection_string(),
+            )
+        elif dataset_type == "postgres":
+            data_source = context.data_sources.add_postgres(
+                name=data_source_name,
+                connection_string=build_postgres_connection_string(),
             )
         else:
             data_source = context.data_sources.add_spark(name=data_source_name)
@@ -39,7 +44,7 @@ def get_or_create_batch_definition(context, file_config: dict):
     try:
         data_asset = data_source.get_asset(data_asset_name)
     except Exception:
-        if dataset_type == "databricks":
+        if dataset_type in ("databricks", "postgres"):
             data_asset = data_source.add_table_asset(
                 name=data_asset_name,
                 table_name=file_config["table"],
@@ -50,7 +55,7 @@ def get_or_create_batch_definition(context, file_config: dict):
     try:
         batch_definition = data_asset.get_batch_definition(batch_definition_name)
     except Exception:
-        if dataset_type == "databricks":
+        if dataset_type in ("databricks", "postgres"):
             batch_definition = data_asset.add_batch_definition_whole_table(
                 batch_definition_name
             )
@@ -102,6 +107,9 @@ def run_file_validation(context, spark, file_config: dict):
 
     if dataset_type == "databricks":
         # Pas besoin de DataFrame : GX interroge directement le SQL Warehouse
+        result = checkpoint.run(run_id=run_id)
+    elif dataset_type == "postgres":
+        print("here")
         result = checkpoint.run(run_id=run_id)
     else:
         df = spark.read.parquet(file_config["path"])

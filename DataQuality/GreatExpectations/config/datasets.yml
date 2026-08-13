@@ -9,3 +9,9 @@ datasets:
     table: demo_edadou.gold.bv_customer_order
     expectation_suite: bv_orders
     checkpoint_name: bv_orders_checkpoint
+
+  - name: clients_postgres
+    type: postgres
+    table: esb_gbmref.tld_esb_bloomreach_routing
+    expectation_suite: bloomreach_expectations
+    checkpoint_name: bloomreach_checkpoint
