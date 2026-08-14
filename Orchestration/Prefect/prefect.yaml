@@ -14,7 +14,7 @@ deployments:
     version: 1.0
     tags: ["clients"]
     description: "Traite les IDs clients"
-    entrypoint: flows/main_flow.py:main
+    entrypoint: flows/customer_flow.py:main
     work_pool:
       name: mon-work-pool
       work_queue_name: default
