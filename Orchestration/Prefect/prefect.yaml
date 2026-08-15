@@ -6,19 +6,17 @@ build: null
 push: null
 
 pull:
-  - prefect.deployments.steps.set_working_directory:
-      directory: /chemin/vers/mon_projet_prefect
+  - prefect.deployments.steps.git_clone:
+      repository: https://github.com/edadou-byte/data-architect-roadmap.git
+      branch: master
 
 deployments:
   - name: main-deployment
-    version: 1.0
-    tags: ["clients"]
     description: "Traite les IDs clients"
-    entrypoint: flows/customer_flow.py:main
+    entrypoint: Orchestration/Prefect/flows/customer_flow.py:main
     work_pool:
       name: mon-work-pool
       work_queue_name: default
     schedule:
-      cron: "0 6 * * *"    # tous les jours à 6h
+      cron: "*/5 * * * *"    # tous les jours à 6h
       timezone: "Europe/Paris"
-    parameters: {}
